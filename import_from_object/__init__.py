@@ -7,6 +7,11 @@ from . import assets
 class ModuleContainer:
     def __init__(self, name) -> None:
         self.name = name
+        if name in sys.modules:
+            raise ValueError(
+                f"Module '{name}' already present. "
+                "Choose a different one to avoid overwriting it."
+            )
         sys.modules[name] = self
 
     def __getattribute__(self, name):

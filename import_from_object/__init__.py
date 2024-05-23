@@ -19,12 +19,12 @@ class ModuleContainer:
         attrs = {
             "__spec__": None,
             "__name__": mname,
-            "__class__": None,
-            "__path__": None,
         }
-        if name in attrs:
+
+        try:
             return attrs[name]
-        attr = getattr(assets, name)
-        if not callable(attr):
-            return attr
-        return partial(attr, mname)
+        except KeyError:
+            attr = getattr(assets, name)
+            if not callable(attr):
+                return attr
+            return partial(attr, mname)

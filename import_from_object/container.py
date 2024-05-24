@@ -25,24 +25,19 @@ def register(name, obj):
         setattr(parent_module, child_name, obj)
 
     sys.modules[qualified] = obj
-    obj.name = qualified
+    obj.name = obj.__name__ = qualified
+    obj.__spec__ = None
 
 
 class ModuleContainer:
-    def __init__(self, name) -> None:
+    def __init__(self, name: str) -> None:
         register(name, self)
 
-    def __getattribute__(self, name):
-        attrs = {
-            "__spec__": None,
-            "__name__": super().__getattribute__("name"),
-        }
+    def __getattribute__(self, name: str):
+        try:
+            if name.startswith("_"):
+                raise AttributeError
 
-        try:
-            return attrs[name]
-        except KeyError:
-            pass
-        try:
             attr = getattr(assets, name)
             if not callable(attr):
                 return attr

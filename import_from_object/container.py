@@ -15,16 +15,19 @@ class ModuleContainer:
         sys.modules[name] = self
 
     def __getattribute__(self, name):
-        mname = super().__getattribute__("name")
         attrs = {
             "__spec__": None,
-            "__name__": mname,
+            "__name__": super().__getattribute__("name"),
         }
 
         try:
             return attrs[name]
         except KeyError:
+            pass
+        try:
             attr = getattr(assets, name)
             if not callable(attr):
                 return attr
-            return partial(attr, mname)
+            return partial(attr, self.name)
+        except AttributeError:
+            return super().__getattribute__(name)
